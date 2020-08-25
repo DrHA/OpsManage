@@ -93,9 +93,9 @@ class AnsibleModel(WebsocketConsumer,AssetsAnsible):
             try:    
                 ANS.run_model(host_list=sList,module_name=model_name,module_args=request.get('deploy_args',""))
             except Exception as ex:
-                self.send(ex)
-                return
-                
+                self.send(text_data="Ansible 模块运行失败: {ex}".format(ex=ex))
+                return False
+
             self.send("\n<font color='white'>执行完成，总共{count}台机器，耗时：{time}</font>".format(count=count, time=format_time(int(time.time())-self.stime)))
         else:
             self.send("未选择主机或者您没有主机权限")
