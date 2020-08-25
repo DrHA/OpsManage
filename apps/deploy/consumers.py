@@ -90,9 +90,12 @@ class AnsibleModel(WebsocketConsumer,AssetsAnsible):
                 
             if request.get('server_model') == 'inventory_groups':
                 sList = ",".join(resource.keys())
+            try:    
+                ANS.run_model(host_list=sList,module_name=model_name,module_args=request.get('deploy_args',""))
+            except Exception as ex:
+                self.send(ex)
+                return
                 
-            ANS.run_model(host_list=sList,module_name=model_name,module_args=request.get('deploy_args',""))
-
             self.send("\n<font color='white'>执行完成，总共{count}台机器，耗时：{time}</font>".format(count=count, time=format_time(int(time.time())-self.stime)))
         else:
             self.send("未选择主机或者您没有主机权限")
