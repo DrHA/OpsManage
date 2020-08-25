@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import json, time, os, uuid
+import re
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from dao.assets import AssetsAnsible
@@ -73,6 +74,13 @@ class AnsibleModel(WebsocketConsumer,AssetsAnsible):
 
         if not model_name:
             self.send("模块不能为空")
+            self.close()
+            return
+
+        deploy_args = request.get('deploy_args')
+
+        if(re.match(r".*rm|halt|poweroff|reboot|shutdown.*",deploy_args)):
+            self.send("包含敏感命令：rm|halt|poweroff|reboot|shutdown")
             self.close()
             return
 
